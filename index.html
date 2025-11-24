@@ -66,14 +66,32 @@
 
         // --- 行程資料 (已更新 12/2 資訊與所有訂位代號) ---
         const itineraryData = [
-            // 12/2 (週二)
+            // 12/2 (週二) - 資訊已根據使用者要求更新
             {
                 date: '12/2',
                 dayOfWeek: '週二',
                 weather: { temp: '22°C', icon: 'cloud' },
                 items: [
-                    { id: '0-1', time: '18:00', title: '台灣高鐵 (準備出發)', type: 'transport', location: '高鐵xxx站 → 高鐵桃園站', description: '搭乘高鐵前往桃園，準備隔日早班機。', tips: ['⚠️ 預留轉乘時間', '💡 晚餐可在高鐵站或桃園站附近解決'] },
-                    { id: '0-2', time: '20:00', title: '桃園機場周邊飯店 Check-in', type: 'hotel', location: '桃園機場周邊飯店', description: '入住機場附近飯店，確保隔日能準時抵達桃園機場。', bookingCode: 'AIRPORT-HOTEL-RES', url: 'https://www.google.com/search?q=%E6%A1%83%E5%9C%92%E6%A9%9F%E5%A0%B4%E9%85%92%E5%BA%97', urlLabel: '桃園飯店查詢' }
+                    { 
+                        id: '0-1', 
+                        time: '22:11', 
+                        title: '台灣高鐵 (臺南 → 桃園)', 
+                        type: 'transport', 
+                        location: '高鐵臺南站 → 高鐵桃園站', 
+                        description: '搭乘高鐵前往桃園，預計 23:29 抵達。', 
+                        tips: ['⚠️ 確保趕上末班車', '💡 抵達桃園後需轉乘', '💡 高鐵票已預訂'] 
+                    },
+                    { 
+                        id: '0-2', 
+                        time: '23:45', 
+                        title: '城市商旅 桃園航空館', 
+                        type: 'hotel', 
+                        location: '城市商旅 桃園航空館 (City Suites Gateway)', 
+                        description: '抵達桃園高鐵站後，轉乘計程車或機場捷運至飯店。入住機場附近飯店，確保隔日能準時抵達桃園機場。', 
+                        bookingCode: 'AIRPORT-HOTEL-RES', 
+                        url: 'https://www.citysuites.com.tw/', 
+                        urlLabel: '城市商旅官網' 
+                    }
                 ]
             },
             // 12/3 (週三)
