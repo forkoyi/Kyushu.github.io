@@ -216,7 +216,7 @@
             
             header.innerHTML = `
                 <div>
-                    <p class="text-xs font-bold text-stone-400 tracking-widest uppercase mb-1">JAPAN TRIP 2024</p>
+                    <p class="text-xs font-bold text-stone-400 tracking-widest uppercase mb-1">JAPAN TRIP 2025</p>
                     <h1 class="text-2xl font-bold text-stone-800 font-serif">九州旅帖</h1>
                 </div>
                 ${activeTab === 'itinerary' ? renderWeatherBadge(currentDay.weather.temp, currentDay.weather.icon) : ''}
@@ -228,7 +228,7 @@
         // 5. 渲染日期選擇器
         const renderDateSelector = () => {
             const html = `
-                <div class="sticky top-[73px] z-10 bg-[#fdfbf7] py-2 border-b border-stone-100 shadow-sm">
+                <div class="sticky top-[30px] z-10 bg-[#fdfbf7] py-2 border-b border-stone-100 shadow-sm">
                     <div class="flex overflow-x-auto px-4 gap-3 pb-2 scrollbar-hide snap-x">
                         ${itineraryData.map((day, idx) => `
                             <button
