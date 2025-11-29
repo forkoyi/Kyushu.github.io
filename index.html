@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 九州賞楓自駕行</title>
+    <title>九州行旅2025</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -311,7 +311,7 @@
                     </div>
                 </div>
 
-                <!-- Advanced Expense Tracker (Mobile Friendly) -->
+                <!-- Advanced Expense Tracker (Mobile Optimized) -->
                 <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 mb-8">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-lg font-bold text-slate-800">記帳/預算表</h3>
@@ -336,32 +336,44 @@
                     <!-- Input Form (Mobile Optimized) -->
                     <div class="space-y-3 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
                         
-                        <!-- Row 1: Payer Segmented Control (Full Width) -->
-                        <div class="flex bg-slate-200 p-1 rounded-lg">
-                            <button @click="newExpense.payer = 'YiQuan'" 
-                                    :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'YiQuan' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500']">
-                                奕銓
-                            </button>
-                            <button @click="newExpense.payer = 'BingFen'" 
-                                    :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'BingFen' ? 'bg-white text-pink-600 shadow-sm' : 'text-slate-500']">
-                                秉芬
-                            </button>
+                        <!-- 1. 付款人 (Segmented Control) -->
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold ml-1 mb-1 block">付款人</label>
+                            <div class="flex bg-slate-200 p-1 rounded-lg">
+                                <button @click="newExpense.payer = 'YiQuan'" 
+                                        :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'YiQuan' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500']">
+                                    奕銓
+                                </button>
+                                <button @click="newExpense.payer = 'BingFen'" 
+                                        :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'BingFen' ? 'bg-white text-pink-600 shadow-sm' : 'text-slate-500']">
+                                    秉芬
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Row 2: Item (Full Width) -->
-                        <input v-model="newExpense.item" placeholder="消費項目 (如: 晚餐)" class="w-full bg-white rounded-lg px-3 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                        <!-- 2. 消費項目 -->
+                        <input v-model="newExpense.item" placeholder="消費項目 (如: 晚餐)" class="w-full bg-white rounded-lg px-3 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none mt-2">
                         
-                        <!-- Row 3: Amount & Currency -->
-                        <div class="flex gap-2">
-                            <input v-model.number="newExpense.amount" type="number" placeholder="金額" class="flex-1 bg-white rounded-lg px-3 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
-                            <select v-model="newExpense.currency" class="w-24 bg-white rounded-lg px-2 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none font-bold text-slate-600">
-                                <option value="JPY">JPY</option>
-                                <option value="TWD">TWD</option>
-                            </select>
+                        <!-- 3. 幣別 (Segmented Control - Updated) -->
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold ml-1 mb-1 block mt-2">幣別</label>
+                            <div class="flex bg-slate-200 p-1 rounded-lg">
+                                <button @click="newExpense.currency = 'JPY'" 
+                                        :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.currency === 'JPY' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500']">
+                                    JPY (日幣)
+                                </button>
+                                <button @click="newExpense.currency = 'TWD'" 
+                                        :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.currency === 'TWD' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500']">
+                                    TWD (台幣)
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Row 4: Day & Method -->
-                        <div class="flex gap-2">
+                        <!-- 4. 金額 -->
+                        <input v-model.number="newExpense.amount" type="number" placeholder="輸入金額" class="w-full bg-white rounded-lg px-3 py-3 text-lg font-bold border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none mt-1">
+
+                        <!-- 5. 日期與方式 -->
+                        <div class="flex gap-2 mt-2">
                             <select v-model="newExpense.day" class="flex-1 bg-white rounded-lg px-2 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none text-slate-600">
                                 <option v-for="(day, idx) in timelineData" :key="idx" :value="idx">Day {{ idx }}</option>
                             </select>
@@ -373,7 +385,7 @@
                             </select>
                         </div>
 
-                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-3 text-sm font-bold hover:bg-slate-700 transition-colors active:scale-95 shadow-lg shadow-slate-300">
+                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-3 text-sm font-bold hover:bg-slate-700 transition-colors active:scale-95 shadow-lg shadow-slate-300 mt-2">
                             <i class="fas fa-plus mr-1"></i> 加入紀錄
                         </button>
                     </div>
