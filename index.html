@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 九州行旅</title>
+    <title>2025 九州賞楓自駕行</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,30 +61,30 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
+<body class="bg-slate-50 text-slate-800 h-[100dvh] flex flex-col overflow-hidden">
 
     <div id="app" class="flex flex-col h-full w-full max-w-md mx-auto bg-white shadow-2xl relative overflow-hidden">
 
         <!-- ================= HERO SECTION (Only on Home) ================= -->
-        <header v-if="currentTab === 'home'" class="relative bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-6 pb-12 rounded-b-[2.5rem] shadow-lg z-10 shrink-0">
+        <header v-if="currentTab === 'home'" class="relative bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-6 pb-12 rounded-b-[2.5rem] shadow-lg z-10 shrink-0 transition-all duration-500">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <div class="text-xs font-medium opacity-80 bg-white/20 px-2 py-1 rounded-full inline-block mb-2">2025 TRIP</div>
-                    <h1 class="text-3xl font-bold tracking-tight">九州行旅 🍁</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">九州賞楓<br>自駕之旅 🍁</h1>
                 </div>
-                <!-- Weather Widget (Current) -->
-                <div class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20">
-                    <i class="fas fa-sun text-yellow-300 text-2xl mb-1"></i>
-                    <span class="text-2xl font-bold">{{ currentWeather }}°</span>
-                    <span class="text-xs opacity-80">{{ currentLocation }}</span>
+                <!-- Weather Widget (Dynamic based on selected day) -->
+                <div class="flex flex-col items-center bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg min-w-[80px]">
+                    <i :class="currentDayInfo.weather.icon + ' text-yellow-300 text-2xl mb-1'"></i>
+                    <span class="text-2xl font-bold">{{ currentDayInfo.weather.temp }}°</span>
+                    <span class="text-xs opacity-80 text-center whitespace-nowrap">{{ currentDayInfo.location }}</span>
                 </div>
             </div>
 
             <!-- Countdown -->
             <div class="flex items-center gap-2 text-sm opacity-90 mb-4">
                 <i class="far fa-calendar-alt"></i>
-                <span>12/3 (三) - 12/9 (二)</span>
-                <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-2 animate-pulse">
+                <span>{{ currentDayInfo.date }}</span>
+                <span v-if="currentDayIndex === 0" class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-2 animate-pulse">
                     還有 {{ daysUntilTrip }} 天
                 </span>
             </div>
@@ -95,7 +95,7 @@
                     v-for="(day, index) in timelineData" 
                     :key="index"
                     @click="scrollToDay(index)"
-                    :class="['flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center transition-all border-2', 
+                    :class="['flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center transition-all border-2 cursor-pointer', 
                              currentDayIndex === index ? 'bg-white text-purple-700 border-white scale-105 shadow-md' : 'bg-white/10 text-white border-transparent hover:bg-white/20']"
                 >
                     <span class="text-xs opacity-70">Day</span>
@@ -105,13 +105,13 @@
         </header>
 
         <!-- ================= MAIN CONTENT AREA ================= -->
-        <main class="flex-1 overflow-y-auto pb-24 pt-4 px-4 bg-slate-50 relative scroll-smooth" id="main-content">
+        <main class="flex-1 overflow-y-auto pb-32 pt-4 px-4 bg-slate-50 relative scroll-smooth" id="main-content">
             
             <!-- VIEW: HOME (Timeline) -->
             <div v-if="currentTab === 'home'">
                 <div v-for="(day, dayIndex) in timelineData" :key="dayIndex" :id="'day-' + dayIndex" class="mb-8">
                     <!-- Day Header with Weather -->
-                    <div class="sticky top-0 bg-slate-50/95 backdrop-blur py-3 z-10 border-b border-slate-100 mb-4">
+                    <div class="sticky top-0 bg-slate-50/95 backdrop-blur py-3 z-10 border-b border-slate-100 mb-4 transition-all">
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-3">
                                 <div class="w-2 h-8 bg-purple-600 rounded-r-lg"></div>
@@ -122,7 +122,7 @@
                                     <span class="text-xs font-normal text-slate-500">{{ day.date }}</span>
                                 </div>
                             </div>
-                            <!-- Daily Weather -->
+                            <!-- Daily Weather Inline -->
                             <div class="flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">
                                 <i :class="day.weather.icon + ' text-yellow-500'"></i>
                                 <span class="text-sm font-bold text-slate-700">{{ day.weather.temp }}°C</span>
@@ -147,7 +147,7 @@
                             </div>
 
                             <!-- Card -->
-                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 active:scale-[0.98] transition-transform" @click="handleCardClick(event)">
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 active:scale-[0.98] transition-transform cursor-pointer" @click="handleCardClick(event)">
                                 <div class="flex justify-between items-start mb-1">
                                     <span class="text-sm font-bold text-slate-400 font-mono">{{ event.time }}</span>
                                     <div class="flex gap-1">
@@ -166,11 +166,11 @@
                                         <i class="fas fa-map-marker-alt text-red-500"></i> 導航
                                     </a>
                                     
-                                    <!-- Story Link -->
-                                    <a v-if="event.storyLink" :href="event.storyLink" target="_blank" @click.stop 
+                                    <!-- Story Button (Opens Modal) -->
+                                    <button v-if="event.story" @click.stop="openStoryModal(event)" 
                                        class="inline-flex items-center gap-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-100">
                                         <i class="fas fa-book-open"></i> 故事
-                                    </a>
+                                    </button>
 
                                     <button v-if="event.code || event.detail" @click.stop="openDetailModal(event)" 
                                             class="inline-flex items-center gap-1 text-xs bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-100">
@@ -201,7 +201,7 @@
                 <!-- Packing List -->
                 <div v-if="listTab === 'pack'" class="space-y-3">
                     <div v-for="(item, idx) in packList" :key="idx" 
-                         class="flex items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100"
+                         class="flex items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100 cursor-pointer"
                          @click="item.checked = !item.checked">
                         <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 transition-colors"
                              :class="item.checked ? 'bg-green-500 border-green-500' : 'border-slate-300'">
@@ -247,29 +247,29 @@
                 
                 <!-- Driving HUD -->
                 <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
                     <div class="relative z-10">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-bold italic"><i class="fas fa-car mr-2"></i>DRIVER HUD</h3>
                             <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">自駕模式</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3 mb-4">
-                            <button @click="showDriveTips = true" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl text-left transition-colors">
+                            <button @click="showDriveTips = true" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl text-left transition-colors border border-white/5 active:bg-white/30 cursor-pointer">
                                 <i class="fas fa-book text-blue-300 mb-2 block"></i>
                                 <div class="text-sm font-bold">自駕懶人包</div>
                                 <div class="text-[10px] opacity-70">加油/報警SOP</div>
                             </button>
-                            <button @click="showMapCodes = true" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl text-left transition-colors">
+                            <button @click="showMapCodes = true" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl text-left transition-colors border border-white/5 active:bg-white/30 cursor-pointer">
                                 <i class="fas fa-map-marked-alt text-green-300 mb-2 block"></i>
                                 <div class="text-sm font-bold">MapCodes</div>
                                 <div class="text-[10px] opacity-70">導航代碼清單</div>
                             </button>
                         </div>
                         <div class="flex gap-2">
-                             <a href="tel:110" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl flex items-center justify-center font-bold transition-colors">
+                             <a href="tel:110" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl flex items-center justify-center font-bold transition-colors active:scale-95">
                                 <i class="fas fa-phone-alt mr-2"></i> 110 警察
                              </a>
-                             <a href="tel:119" class="flex-1 bg-orange-600 hover:bg-orange-700 py-3 rounded-xl flex items-center justify-center font-bold transition-colors">
+                             <a href="tel:119" class="flex-1 bg-orange-600 hover:bg-orange-700 py-3 rounded-xl flex items-center justify-center font-bold transition-colors active:scale-95">
                                 <i class="fas fa-ambulance mr-2"></i> 119 救護
                              </a>
                         </div>
@@ -302,21 +302,38 @@
                     </div>
                 </div>
 
-                <!-- Advanced Expense Tracker -->
+                <!-- Advanced Expense Tracker (With Payer) -->
                 <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 mb-8">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-2">
                         <h3 class="text-lg font-bold text-slate-800">記帳/預算表</h3>
-                        <div class="text-right">
-                            <div class="text-[10px] text-slate-400 uppercase">總支出</div>
-                            <span class="text-xs font-bold text-slate-600 mr-2">JPY {{ totalExpenseJPY.toLocaleString() }}</span>
-                            <span class="text-xs font-bold text-slate-600">TWD {{ totalExpenseTWD.toLocaleString() }}</span>
-                        </div>
                     </div>
                     
+                    <!-- Expense Summary -->
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <div class="bg-blue-50 p-2 rounded-lg text-center border border-blue-100">
+                            <div class="text-[10px] text-blue-500 font-bold mb-1">奕銓 ({{ formatMoney(personStats.YiQuan) }})</div>
+                            <div class="h-1 bg-blue-200 rounded-full w-full">
+                                <div class="h-full bg-blue-500 rounded-full" :style="{width: getPercent(personStats.YiQuan) + '%'}"></div>
+                            </div>
+                        </div>
+                        <div class="bg-pink-50 p-2 rounded-lg text-center border border-pink-100">
+                            <div class="text-[10px] text-pink-500 font-bold mb-1">秉芬 ({{ formatMoney(personStats.BingFen) }})</div>
+                            <div class="h-1 bg-pink-200 rounded-full w-full">
+                                <div class="h-full bg-pink-500 rounded-full" :style="{width: getPercent(personStats.BingFen) + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Input Form -->
                     <div class="space-y-3 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <!-- Row 1: Item -->
-                        <input v-model="newExpense.item" placeholder="消費項目 (如: 晚餐)" class="w-full bg-white rounded-lg px-3 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                        <!-- Row 1: Item & Payer -->
+                        <div class="flex gap-2">
+                            <input v-model="newExpense.item" placeholder="項目" class="flex-[2] bg-white rounded-lg px-3 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                            <select v-model="newExpense.payer" class="flex-1 bg-white rounded-lg px-2 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none font-bold text-slate-600">
+                                <option value="YiQuan">奕銓</option>
+                                <option value="BingFen">秉芬</option>
+                            </select>
+                        </div>
                         
                         <!-- Row 2: Amount & Currency -->
                         <div class="flex gap-2">
@@ -340,7 +357,7 @@
                             </select>
                         </div>
 
-                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-2 text-sm font-bold hover:bg-slate-700 transition-colors">
+                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-2 text-sm font-bold hover:bg-slate-700 transition-colors active:scale-95">
                             <i class="fas fa-plus mr-1"></i> 加入紀錄
                         </button>
                     </div>
@@ -351,23 +368,29 @@
                             <div class="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded mb-2 inline-block">Day {{ dayIdx }}</div>
                             <div class="space-y-2">
                                 <div v-for="(exp, idx) in group.items" :key="idx" class="flex justify-between items-center text-sm p-2 bg-white border border-slate-100 rounded-lg shadow-sm">
-                                    <div>
-                                        <div class="text-slate-700 font-medium">{{ exp.item }}</div>
-                                        <div class="text-[10px] text-slate-400">
-                                            <span v-if="exp.method === 'credit'"><i class="far fa-credit-card"></i> 信用卡</span>
-                                            <span v-else-if="exp.method === 'mobile'"><i class="fas fa-mobile-alt"></i> 行動支付</span>
-                                            <span v-else-if="exp.method === 'ic'"><i class="fas fa-subway"></i> 電子票證</span>
-                                            <span v-else><i class="fas fa-coins"></i> 現金</span>
+                                    <div class="flex items-center gap-2">
+                                        <!-- Payer Badge -->
+                                        <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2', exp.payer === 'YiQuan' ? 'bg-blue-100 text-blue-600 border-blue-200' : 'bg-pink-100 text-pink-600 border-pink-200']">
+                                            {{ exp.payer === 'YiQuan' ? '奕' : '秉' }}
+                                        </div>
+                                        <div>
+                                            <div class="text-slate-700 font-medium leading-tight">{{ exp.item }}</div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">
+                                                <span v-if="exp.method === 'credit'"><i class="far fa-credit-card"></i> 信用卡</span>
+                                                <span v-else-if="exp.method === 'mobile'"><i class="fas fa-mobile-alt"></i> 行動支付</span>
+                                                <span v-else-if="exp.method === 'ic'"><i class="fas fa-subway"></i> 電子票證</span>
+                                                <span v-else><i class="fas fa-coins"></i> 現金</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-3">
-                                        <span class="font-mono font-bold text-slate-600">{{ exp.currency }} {{ exp.amount.toLocaleString() }}</span>
-                                        <button @click="removeExpense(exp.originalIndex)" class="text-slate-300 hover:text-red-400"><i class="fas fa-times"></i></button>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono font-bold text-slate-600 text-sm">{{ exp.currency }} {{ exp.amount.toLocaleString() }}</span>
+                                        <button @click="removeExpense(exp.originalIndex)" class="text-slate-300 hover:text-red-400 px-2"><i class="fas fa-times"></i></button>
                                     </div>
                                 </div>
                                 <!-- Daily Subtotal -->
                                 <div class="text-right text-[10px] text-slate-400 pt-1 border-t border-dashed border-slate-200">
-                                    小計: JPY {{ group.subtotal.JPY.toLocaleString() }} / TWD {{ group.subtotal.TWD.toLocaleString() }}
+                                    小計: JPY {{ group.subtotal.JPY.toLocaleString() }}
                                 </div>
                             </div>
                         </div>
@@ -459,25 +482,29 @@
                     <div v-for="group in backupSpots" :key="group.category">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-2">{{ group.category }}</h3>
                         <div class="space-y-3">
-                             <div v-for="spot in group.items" :key="spot.name" class="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+                             <!-- Made the whole card a link for better UX -->
+                             <a v-for="spot in group.items" :key="spot.name" 
+                                :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.address)" 
+                                target="_blank"
+                                class="block bg-white rounded-xl p-3 shadow-sm border border-slate-100 hover:bg-slate-50 active:scale-[0.99] transition-all cursor-pointer">
+                                
                                 <div class="flex justify-between items-start mb-2">
                                     <div>
                                         <h4 class="font-bold text-slate-800 text-sm">{{ spot.name }}</h4>
                                         <p class="text-[10px] text-slate-500 mt-1"><i class="fas fa-map-marker-alt mr-1"></i>{{ spot.address }}</p>
                                     </div>
-                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.address)" target="_blank" 
-                                       class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 shrink-0">
+                                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 shrink-0">
                                         <i class="fas fa-location-arrow text-sm"></i>
-                                    </a>
+                                    </div>
                                 </div>
-                                <div class="bg-slate-50 rounded px-2 py-1 flex justify-between items-center" @click="copyText(spot.code)">
+                                <div class="bg-slate-50 rounded px-2 py-1 flex justify-between items-center" @click.stop.prevent="copyText(spot.code)">
                                     <span class="text-[10px] text-slate-400">Navi: 電話/MapCode</span>
                                     <div class="flex items-center gap-1">
                                         <span class="text-xs font-mono font-bold text-slate-700">{{ spot.code }}</span>
                                         <i class="far fa-copy text-[10px] text-slate-400"></i>
                                     </div>
                                 </div>
-                             </div>
+                             </a>
                         </div>
                     </div>
                 </div>
@@ -488,7 +515,7 @@
         </main>
 
         <!-- ================= BOTTOM NAVIGATION ================= -->
-        <nav class="bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center z-20 shrink-0 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+        <nav class="bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center z-20 shrink-0 shadow-[0_-5px_10px_rgba(0,0,0,0.03)] pb-safe">
             <button @click="currentTab = 'home'" :class="navBtnClass('home')">
                 <div class="text-xl mb-1"><i class="fas fa-stream"></i></div>
                 <span class="text-[10px] font-bold">行程</span>
@@ -498,8 +525,8 @@
                 <span class="text-[10px] font-bold">地圖</span>
             </button>
             
-            <div class="-mt-8">
-                <button @click="currentTab = 'list'" class="w-14 h-14 bg-purple-600 rounded-full shadow-lg shadow-purple-300 text-white flex items-center justify-center text-xl hover:scale-105 transition-transform">
+            <div class="-mt-12">
+                <button @click="currentTab = 'list'" class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full shadow-lg shadow-purple-300/50 text-white flex items-center justify-center text-2xl hover:scale-105 active:scale-95 transition-transform border-4 border-white">
                     <i class="fas fa-clipboard-check"></i>
                 </button>
             </div>
@@ -518,24 +545,45 @@
         <!-- Detail Modal -->
         <transition name="fade">
             <div v-if="showModal" class="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showModal = false">
-                <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 text-purple-600 text-2xl">
+                <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100 flex flex-col max-h-[85vh]">
+                    
+                    <!-- Modal Header -->
+                    <div class="text-center mb-4 flex-shrink-0">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 text-purple-600 text-2xl">
                             <i :class="modalData.icon"></i>
                         </div>
                         <h3 class="text-xl font-bold text-slate-800">{{ modalData.title }}</h3>
-                        <p class="text-sm text-slate-500 mt-1">{{ modalData.time }}</p>
+                        <p v-if="!modalData.isStory" class="text-sm text-slate-500 mt-1">{{ modalData.time }}</p>
                     </div>
-                    <div v-if="modalData.code" class="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 text-center">
-                        <p class="text-xs text-slate-400 mb-1">預約/訂位代號</p>
-                        <p class="text-2xl font-mono font-bold text-slate-800 select-all">{{ modalData.code }}</p>
+
+                    <!-- Story Content (Scrollable) -->
+                    <div class="flex-1 overflow-y-auto mb-6 px-1">
+                        <!-- Code Block (If not story) -->
+                        <div v-if="modalData.code && !modalData.isStory" class="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 text-center">
+                            <p class="text-xs text-slate-400 mb-1">預約/訂位代號</p>
+                            <p class="text-2xl font-mono font-bold text-slate-800 select-all">{{ modalData.code }}</p>
+                        </div>
+                        
+                        <!-- Description / Story Text -->
+                        <div :class="['text-slate-600 leading-relaxed', modalData.isStory ? 'text-base' : 'text-sm']">
+                             <!-- Show tag if story -->
+                             <span v-if="modalData.isStory" class="inline-block bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded mb-2 font-bold">
+                                歷史與文化
+                             </span>
+                             <p>{{ modalData.desc }}</p>
+                        </div>
                     </div>
-                    <div class="text-sm text-slate-600 leading-relaxed mb-6">
-                        {{ modalData.desc }}
+
+                    <!-- Footer Actions -->
+                    <div class="flex gap-3 flex-shrink-0">
+                        <a v-if="modalData.isStory && modalData.storyLink" :href="modalData.storyLink" target="_blank" 
+                           class="flex-1 bg-orange-50 text-orange-600 border border-orange-200 font-bold py-3 rounded-xl hover:bg-orange-100 transition-colors text-center flex items-center justify-center gap-2">
+                           <i class="fas fa-external-link-alt"></i> 延伸閱讀
+                        </a>
+                        <button @click="showModal = false" :class="['font-bold py-3 rounded-xl hover:opacity-90 transition-colors', modalData.isStory ? 'flex-1 bg-slate-800 text-white' : 'w-full bg-purple-600 text-white']">
+                            關閉
+                        </button>
                     </div>
-                    <button @click="showModal = false" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition-colors">
-                        關閉
-                    </button>
                 </div>
             </div>
         </transition>
@@ -613,10 +661,6 @@
                 const showDriveTips = ref(false);
                 const modalData = ref({});
                 const currentDayIndex = ref(1); 
-                
-                // Weather
-                const currentWeather = ref(12);
-                const currentLocation = ref('福岡');
 
                 // Currency
                 const jpyAmount = ref('');
@@ -626,7 +670,7 @@
                 const resetCurrency = () => { jpyAmount.value = ''; twdAmount.value = 0; }
 
                 // Advanced Expense Tracker
-                const newExpense = ref({ day: 0, item: '', amount: '', currency: 'JPY', method: 'cash' });
+                const newExpense = ref({ day: 0, item: '', amount: '', currency: 'JPY', method: 'cash', payer: 'YiQuan' });
                 const expenseList = ref([]);
                 
                 const addExpense = () => {
@@ -634,37 +678,13 @@
                         expenseList.value.push({ ...newExpense.value, id: Date.now() });
                         newExpense.value.item = '';
                         newExpense.value.amount = '';
-                        // Keep day, currency and method for faster entry
+                        // Keep other fields for convenience
                     }
                 };
                 
                 const removeExpense = (originalIndex) => {
-                    // Find the item in the original list using id (since idx is from filtered loop)
-                    // But here originalIndex passed from template logic is safest if we manage indices correctly.
-                    // Let's rely on filter index if we pass the object directly?
-                    // Simplified: We pass "originalIndex" which we map below.
                     expenseList.value.splice(originalIndex, 1);
                 };
-
-                const groupedExpenses = computed(() => {
-                    const groups = {};
-                    // Initialize groups for all timeline days
-                    timelineData.forEach((day, idx) => {
-                        groups[idx] = { items: [], subtotal: { JPY: 0, TWD: 0 } };
-                    });
-
-                    expenseList.value.forEach((exp, idx) => {
-                        const dayIdx = exp.day !== undefined ? exp.day : 0;
-                        if (groups[dayIdx]) {
-                            groups[dayIdx].items.push({ ...exp, originalIndex: idx });
-                            groups[dayIdx].subtotal[exp.currency] += exp.amount;
-                        }
-                    });
-                    return groups;
-                });
-
-                const totalExpenseJPY = computed(() => expenseList.value.filter(e => e.currency === 'JPY').reduce((sum, item) => sum + item.amount, 0));
-                const totalExpenseTWD = computed(() => expenseList.value.filter(e => e.currency === 'TWD').reduce((sum, item) => sum + item.amount, 0));
 
                 // Countdown
                 const tripDate = new Date('2025-12-03');
@@ -768,7 +788,7 @@
                     shoppingList.value.splice(idx, 1);
                 };
 
-                // Data: Timeline (Reactive for adding items)
+                // Data: Timeline (Added Stories)
                 const timelineData = ref([
                     {
                         date: '12/2 (二)', location: '桃園',
@@ -786,7 +806,8 @@
                             { time: '11:30', title: '抵達 & 移動', type: 'bus', icon: 'fas fa-bus', desc: '機場巴士 → 熊本駅 (約1hr)', location: '阿蘇熊本機場' },
                             { time: '12:30', title: '午餐: 火車便當', type: 'food', icon: 'fas fa-bento', tag: '特色', desc: '在熊本駅購買當地特色Ekiben。', location: '熊本駅' },
                             { time: '13:00', title: '新幹線 → 博多', type: 'train', icon: 'fas fa-subway', desc: '記得預約「特大荷物席」。', location: '熊本駅' },
-                            { time: '15:30', title: '櫛田神社 & 川端通', type: 'sight', icon: 'fas fa-torii-gate', desc: '博多總鎮守，必看巨大山笠。商店街吃紅豆麻糬湯。', location: '櫛田神社', storyLink: 'https://zh.wikipedia.org/zh-tw/%E6%AB%9B%E7%94%B0%E7%A5%9E%E7%A4%BE' },
+                            { time: '15:30', title: '櫛田神社 & 川端通', type: 'sight', icon: 'fas fa-torii-gate', desc: '博多總鎮守，必看巨大山笠。商店街吃紅豆麻糬湯。', location: '櫛田神社', storyLink: 'https://zh.wikipedia.org/zh-tw/%E6%AB%9B%E7%94%B0%E7%A5%9E%E7%A4%BE',
+                              story: '櫛田神社是博多的總鎮守，深受市民愛戴，暱稱為「櫛田桑」。這裡最著名的是每年7月舉辦的「博多祇園山笠」祭典，神社內常年展示著巨大的裝飾山笠，氣勢非凡。相傳社內的「靈泉鶴之井戶」喝了能長生不老。此處也是博多商人祈求生意興隆的信仰中心。' },
                             { time: '18:00', title: '晚餐: 炸豬排/拉麵', type: 'food', icon: 'fas fa-utensils', tag: '必吃', desc: '推薦「炸豬排 WAKABA」或「麵屋兼虎」。', location: '福岡市中央区天神1-15-36' }
                         ]
                     },
@@ -794,8 +815,10 @@
                         date: '12/4 (四)', location: '太宰府',
                         weather: { icon: 'fas fa-sun', temp: 13, desc: '晴天' },
                         events: [
-                            { time: '10:00', title: '竈門神社', type: 'sight', icon: 'fas fa-leaf', tag: '賞楓', desc: '鬼滅聖地 + 賞楓名所。需搭巴士前往。', location: '竈門神社', storyLink: 'https://kamadojinja.or.jp/' },
-                            { time: '11:30', title: '太宰府天滿宮', type: 'sight', icon: 'fas fa-torii-gate', desc: '參道吃梅枝餅，看隈研吾星巴克。', location: '太宰府天滿宮', storyLink: 'https://www.dazaifutenmangu.or.jp/' },
+                            { time: '10:00', title: '竈門神社', type: 'sight', icon: 'fas fa-leaf', tag: '賞楓', desc: '鬼滅聖地 + 賞楓名所。需搭巴士前往。', location: '竈門神社', storyLink: 'https://kamadojinja.or.jp/',
+                              story: '竈門神社位於寶滿山腳下，自古以來便是祈求姻緣與方除（驅邪）的聖地。近年因漫畫《鬼滅之刃》主角姓氏相同而成為熱門朝聖地。神社境內種植了許多楓樹，秋季時紅葉隧道美不勝收。社務所由知名設計師打造，充滿現代時尚感，販售的御守也非常精緻可愛。' },
+                            { time: '11:30', title: '太宰府天滿宮', type: 'sight', icon: 'fas fa-torii-gate', desc: '參道吃梅枝餅，看隈研吾星巴克。', location: '太宰府天滿宮', storyLink: 'https://www.dazaifutenmangu.or.jp/',
+                              story: '太宰府天滿宮供奉的是「學問之神」菅原道真，是全日本1萬2千座天滿宮的總本宮。傳說中道真公深愛的梅樹一夜之間從京都飛到此地，即著名的「飛梅傳說」。本殿建築華麗，目前正進行大規模整修，期間限定的「仮殿」由藤本壯介設計，屋頂種滿植栽，如森林般夢幻。' },
                             { time: '12:30', title: '午餐: 一蘭拉麵', type: 'food', icon: 'fas fa-utensils', tag: '特色', desc: '太宰府參道店，必點「五角形合格碗」。', location: '一蘭 太宰府参道店' },
                             { time: '18:00', title: '晚餐: Shin-Shin', type: 'food', icon: 'fas fa-utensils', tag: '排隊店', desc: '博多拉麵名店，建議避開尖峰。', location: '博多らーめん Shin-Shin 天神本店' }
                         ]
@@ -805,8 +828,10 @@
                         weather: { icon: 'fas fa-cloud', temp: 8, desc: '寒冷' },
                         events: [
                             { time: '10:00', title: '租車出發', type: 'car', icon: 'fas fa-car', tag: '自駕', desc: 'TOYOTA 薬院駅前店。檢查雪胎/ETC。', location: 'トヨタレンタカー 薬院駅前', code: 'MapCode: 13 287 083*63' },
-                            { time: '13:00', title: '大觀峰展望所', type: 'sight', icon: 'fas fa-mountain', desc: '360度眺望阿蘇五岳與破火山口。', location: '大觀峰' },
-                            { time: '14:30', title: '草千里 & 火口', type: 'sight', icon: 'fas fa-volcano', desc: '看火山氣體狀況。草千里一片金黃。', location: '阿蘇草千里', storyLink: 'https://zh.wikipedia.org/zh-tw/%E9%98%BF%E8%98%87%E5%B1%B1' },
+                            { time: '13:00', title: '大觀峰展望所', type: 'sight', icon: 'fas fa-mountain', desc: '360度眺望阿蘇五岳與破火山口。', location: '大觀峰',
+                              story: '大觀峰位於阿蘇北外輪山的最高點，曾被日本文豪德富蘇峰命名為「大觀峰」，意指景觀宏大。從此處可以360度眺望世界級的阿蘇破火山口與阿蘇五岳。阿蘇五岳連綿的形狀宛如一尊仰臥的釋迦涅槃像，非常莊嚴神聖。秋冬清晨若運氣好，還能看見壯闊的雲海絕景。' },
+                            { time: '14:30', title: '草千里 & 火口', type: 'sight', icon: 'fas fa-volcano', desc: '看火山氣體狀況。草千里一片金黃。', location: '阿蘇草千里', storyLink: 'https://zh.wikipedia.org/zh-tw/%E9%98%BF%E8%98%87%E5%B1%B1',
+                              story: '草千里之濱是烏帽子岳北麓延伸出的廣闊草原，中央有兩個大池塘，風景如畫。這裡可以體驗騎馬漫步，感受火山大地的脈動。不遠處的阿蘇中岳火口是至今仍活躍的活火山，其碧綠色的火山口湖充滿神秘感，但需視火山氣體濃度開放參觀。' },
                             { time: '17:00', title: 'Check-in 黑川溫泉', type: 'hotel', icon: 'fas fa-hot-tub', desc: 'Yamabiko 旅館，享受露天仙人風呂。', location: '黒川温泉 やまびこ旅館', code: 'RYa0kr1u0r' }
                         ]
                     },
@@ -815,18 +840,22 @@
                         weather: { icon: 'fas fa-sun', temp: 10, desc: '晴時多雲' },
                         events: [
                             { time: '09:30', title: '移動 → 南阿蘇', type: 'car', icon: 'fas fa-car', desc: '注意路面是否結冰。' },
-                            { time: '10:30', title: '上色見熊野座神社', type: 'sight', icon: 'fas fa-tree', tag: '秘境', desc: '通往異世界的參道，螢火之森場景。', location: '上色見熊野座神社', storyLink: 'https://kumamoto.guide/tw/spots/detail/12306' },
-                            { time: '14:00', title: '天岩戶神社', type: 'sight', icon: 'fas fa-praying-hands', desc: '最強能量點，步行至天安河原許願。', location: '天岩戶神社', storyLink: 'https://amanoiwato-jinja.jp/' },
+                            { time: '10:30', title: '上色見熊野座神社', type: 'sight', icon: 'fas fa-tree', tag: '秘境', desc: '通往異世界的參道，螢火之森場景。', location: '上色見熊野座神社', storyLink: 'https://kumamoto.guide/tw/spots/detail/12306',
+                              story: '這座神社因動畫《螢火之森》場景而爆紅。通往社殿的參道兩旁排列著近百座長滿青苔的石燈籠，周圍被高聳的杉木林包圍，陽光灑落時充滿神祕與靈氣，彷彿通往異世界的入口。後方的「穿戶岩」據說是鬼八法師踢破的大洞，象徵著必勝與合格的強大能量。' },
+                            { time: '14:00', title: '天岩戶神社', type: 'sight', icon: 'fas fa-praying-hands', desc: '最強能量點，步行至天安河原許願。', location: '天岩戶神社', storyLink: 'https://amanoiwato-jinja.jp/',
+                              story: '這裡是日本神話中「天岩戶傳說」的舞台。相傳太陽神天照大神因弟弟的惡行而躲入岩洞，世界陷入黑暗。眾神在天安河原商議對策，載歌載舞引出天照大神，世界才重見光明。天安河原充滿了堆疊的祈願石塔，被視為日本最強的能量景點之一。' },
                             { time: '16:00', title: '飯店 Check-in', type: 'hotel', icon: 'fas fa-bed', desc: 'SOLEST 高千穗飯店', location: 'ソレスト高千穂ホテル', code: 'AGRJWYNZND' },
                             { time: '18:00', title: '晚餐: 燒肉 和', type: 'food', icon: 'fas fa-drumstick-bite', tag: '必吃', desc: '高千穗牛名店，務必準時。', location: '高千穂牛レストラン和', code: '0982-73-1109' },
-                            { time: '20:00', title: '夜神樂', type: 'sight', icon: 'fas fa-theater-masks', desc: '高千穗神社，欣賞傳統神話表演。', location: '高千穗神社', storyLink: 'https://takachiho-kanko.info/tw/sightseeing/kagura.php' }
+                            { time: '20:00', title: '夜神樂', type: 'sight', icon: 'fas fa-theater-masks', desc: '高千穗神社，欣賞傳統神話表演。', location: '高千穗神社', storyLink: 'https://takachiho-kanko.info/tw/sightseeing/kagura.php',
+                              story: '高千穗夜神樂是被指定為日本國家重要無形民俗文化財的傳統藝能。每晚在高千穗神社神樂殿演出四番（四段），分別講述天照大神躲進岩戶到被請出的故事。這不僅是表演，更是對神明的奉納，舞者戴著面具，伴隨著笛聲與太鼓，充滿了神秘而莊嚴的古代氣息。' }
                         ]
                     },
                     {
                         date: '12/7 (日)', location: '熊本',
                         weather: { icon: 'fas fa-cloud-showers-heavy', temp: 11, desc: '午後雨' },
                         events: [
-                            { time: '09:00', title: '高千穗峽划船', type: 'sight', icon: 'fas fa-water', tag: '預約', desc: '停御鹽井停車場。看真名井瀑布。', location: '高千穗峽', storyLink: 'https://takachiho-kanko.info/tw/sightseeing/' },
+                            { time: '09:00', title: '高千穗峽划船', type: 'sight', icon: 'fas fa-water', tag: '預約', desc: '停御鹽井停車場。看真名井瀑布。', location: '高千穗峽', storyLink: 'https://takachiho-kanko.info/tw/sightseeing/',
+                              story: '高千穗峽是阿蘇火山噴發的熔岩流被五瀨川侵蝕而成的柱狀節理峽谷，兩岸斷崖高達80至100公尺。「真名井瀑布」是日本百選瀑布之一，景色絕美。划船穿梭於峽谷間，近距離仰望瀑布與岩壁，是體驗高千穗大自然鬼斧神工的最佳方式。' },
                             { time: '14:00', title: '熊本還車', type: 'car', icon: 'fas fa-check-circle', desc: 'TOYOTA 熊本站前店。記得加滿油！', location: 'トヨタレンタカー 熊本駅前' },
                             { time: '15:00', title: 'Check-in 飯店', type: 'hotel', icon: 'fas fa-bed', desc: 'Candeo Hotels 頂樓有天空SPA。', location: 'カンデオホテルズ熊本新市街' },
                             { time: '18:00', title: '晚餐: 勝烈亭', type: 'food', icon: 'fas fa-utensils', tag: '必吃', desc: '熊本必吃炸豬排，就在新市街。', location: '勝烈亭 新市街本店' }
@@ -836,9 +865,11 @@
                         date: '12/8 (一)', location: '熊本市區',
                         weather: { icon: 'fas fa-sun', temp: 15, desc: '晴天' },
                         events: [
-                            { time: '09:30', title: '熊本城 & 加藤神社', type: 'sight', icon: 'fas fa-chess-rook', desc: '天守閣與銀杏樹。', location: '熊本城', storyLink: 'https://castle.kumamoto-guide.jp/tw/' },
+                            { time: '09:30', title: '熊本城 & 加藤神社', type: 'sight', icon: 'fas fa-chess-rook', desc: '天守閣與銀杏樹。', location: '熊本城', storyLink: 'https://castle.kumamoto-guide.jp/tw/',
+                              story: '熊本城由名將加藤清正耗時7年建造，以難攻不落的「武者返」石牆聞名，與大阪城、名古屋城並列日本三大名城。2016年雖受大地震重創，但天守閣已修復完成並開放。城內種植許多銀杏，故又名「銀杏城」，秋末冬初金黃一片，與黑色城堡形成強烈對比。' },
                             { time: '12:00', title: '午餐: 城彩苑', type: 'food', icon: 'fas fa-ice-cream', desc: '體驗江戶風情，吃海膽可樂餅。', location: '桜の馬場 城彩苑' },
-                            { time: '14:30', title: '水前寺成趣園', type: 'sight', icon: 'fas fa-leaf', desc: '優雅的日式庭園。', location: '水前寺成趣園' },
+                            { time: '14:30', title: '水前寺成趣園', type: 'sight', icon: 'fas fa-leaf', desc: '優雅的日式庭園。', location: '水前寺成趣園', storyLink: 'http://www.suizenji.or.jp/',
+                              story: '這是一座桃山式回遊庭園，由細川家藩主歷經三代建造。庭園以阿蘇湧泉水池為中心，巧妙地模仿了東海道五十三次的景致，其中最著名的便是模仿富士山的假山造景。園內有出水神社，供奉細川家歷代藩主，環境清幽雅致，是散步與品茶的好去處。' },
                             { time: '16:00', title: '上下通商店街', type: 'shopping', icon: 'fas fa-shopping-bag', tag: '購物', desc: '藥妝、伴手禮最後衝刺。', location: '下通商店街' }
                         ]
                     },
@@ -852,6 +883,59 @@
                         ]
                     }
                 ]);
+
+                // Computed: Current Day Info for Hero Section
+                const currentDayInfo = computed(() => {
+                    return timelineData.value[currentDayIndex.value] || timelineData.value[0];
+                });
+
+                // Computed: Group Expenses
+                const groupedExpenses = computed(() => {
+                    const groups = {};
+                    timelineData.value.forEach((day, idx) => {
+                        groups[idx] = { items: [], subtotal: { JPY: 0 } };
+                    });
+
+                    expenseList.value.forEach((exp, idx) => {
+                        const dayIdx = exp.day !== undefined ? exp.day : 0;
+                        if (groups[dayIdx]) {
+                            // Pass the actual index in the raw list to remove correctly
+                            groups[dayIdx].items.push({ ...exp, originalIndex: idx });
+                            groups[dayIdx].subtotal[exp.currency] += exp.amount;
+                        }
+                    });
+                    return groups;
+                });
+
+                // Computed: Person Stats
+                const personStats = computed(() => {
+                    const stats = { YiQuan: 0, BingFen: 0, Total: 0 };
+                    expenseList.value.forEach(exp => {
+                        // Assuming JPY for simplified stats or convert TWD
+                        let amount = exp.amount;
+                        if (exp.currency === 'TWD') {
+                            amount = exp.amount / rate; // Approximate to JPY for graph
+                        }
+                        
+                        if (exp.payer === 'YiQuan') stats.YiQuan += amount;
+                        else if (exp.payer === 'BingFen') stats.BingFen += amount;
+                        
+                        stats.Total += amount;
+                    });
+                    return stats;
+                });
+
+                const getPercent = (amount) => {
+                    if (personStats.value.Total === 0) return 0;
+                    return (amount / personStats.value.Total) * 100;
+                }
+                
+                const formatMoney = (amount) => {
+                    return '¥' + Math.round(amount).toLocaleString();
+                }
+
+                const totalExpenseJPY = computed(() => expenseList.value.filter(e => e.currency === 'JPY').reduce((sum, item) => sum + item.amount, 0));
+                const totalExpenseTWD = computed(() => expenseList.value.filter(e => e.currency === 'TWD').reduce((sum, item) => sum + item.amount, 0));
 
                 // --- Methods ---
                 const getIconColor = (type) => {
@@ -878,7 +962,7 @@
                 };
 
                 const navBtnClass = (tab) => {
-                    return `flex flex-col items-center justify-center w-full h-full transition-colors ${currentTab.value === tab ? 'text-purple-600' : 'text-slate-400 hover:text-slate-600'}`;
+                    return `flex flex-col items-center justify-center w-full h-full transition-colors ${currentTab.value === tab ? 'text-purple-600' : 'text-slate-400 hover:text-slate-600'} cursor-pointer active:scale-90 duration-200`;
                 };
 
                 const scrollToDay = (index) => {
@@ -898,6 +982,19 @@
                         openDetailModal(event);
                     }
                 };
+                
+                const openStoryModal = (event) => {
+                    modalData.value = {
+                        title: event.title,
+                        time: event.time,
+                        desc: event.story || '暫無詳細故事介紹。',
+                        icon: event.icon,
+                        code: event.code || '',
+                        isStory: true,
+                        storyLink: event.storyLink
+                    };
+                    showModal.value = true;
+                }
 
                 const openDetailModal = (event) => {
                     modalData.value = {
@@ -905,12 +1002,14 @@
                         time: event.time,
                         desc: event.desc,
                         icon: event.icon,
-                        code: event.code || ''
+                        code: event.code || '',
+                        isStory: false
                     };
                     showModal.value = true;
                 };
 
                 const copyText = (text) => {
+                    if (!text) return;
                     navigator.clipboard.writeText(text).then(() => {
                         alert(`已複製: ${text}`);
                     });
@@ -959,13 +1058,14 @@
 
                 return {
                     currentTab, listTab, mapTab, showModal, showMapCodes, showDriveTips, modalData,
-                    currentWeather, currentLocation, daysUntilTrip,
+                    currentDayInfo, daysUntilTrip,
                     jpyAmount, twdAmount, calculateTWD, resetCurrency,
                     newExpense, expenseList, addExpense, removeExpense, totalExpenseJPY, totalExpenseTWD, groupedExpenses,
+                    personStats, getPercent, formatMoney,
                     timelineData, hotels, mapCodes, packList, shoppingList, backupSpots,
                     addPackItem, addShopItem, removeShopItem,
                     getIconColor, getTagColor, navBtnClass, scrollToDay, currentDayIndex,
-                    handleCardClick, openDetailModal, copyText, highlightText, allSpots,
+                    handleCardClick, openDetailModal, openStoryModal, copyText, highlightText, allSpots,
                     promptAddEvent
                 };
             }
