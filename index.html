@@ -217,24 +217,33 @@
                     </button>
                 </div>
 
-                <!-- Shopping List -->
+                <!-- Shopping List (With Image Upload) -->
                 <div v-if="listTab === 'buy'" class="grid grid-cols-2 gap-4">
                     <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-xl overflow-hidden shadow-sm relative group">
-                        <div class="h-32 bg-slate-200 flex items-center justify-center relative overflow-hidden">
+                        
+                        <!-- Image Area with Upload -->
+                        <div class="h-32 bg-slate-200 flex items-center justify-center relative overflow-hidden cursor-pointer" @click="triggerFileUpload(idx)">
                             <img v-if="item.img" :src="item.img" class="w-full h-full object-cover">
                             <i v-else class="fas fa-camera text-slate-400 text-2xl"></i>
-                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <span class="text-white text-xs font-bold">更換照片</span>
+                            
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-white text-xs font-bold"><i class="fas fa-upload mr-1"></i>上傳照片</span>
                             </div>
+                            
+                            <!-- Hidden File Input -->
+                            <input type="file" :ref="(el) => setFileRef(el, idx)" @change="handleImageUpload($event, idx)" accept="image/*" class="hidden">
                         </div>
+
                         <div class="p-3">
-                            <input v-model="item.name" class="w-full font-bold text-slate-800 bg-transparent border-none p-0 focus:ring-0 placeholder-slate-400" placeholder="輸入商品名">
+                            <input v-model="item.name" class="w-full font-bold text-slate-800 bg-transparent border-none p-0 focus:ring-0 placeholder-slate-400 text-sm" placeholder="輸入商品名">
                             <input v-model="item.note" class="w-full text-xs text-slate-500 bg-transparent border-none p-0 focus:ring-0 placeholder-slate-300 mt-1" placeholder="備註 (如: 藥妝)">
                         </div>
-                        <button @click="removeShopItem(idx)" class="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center shadow-md">
+                        <button @click="removeShopItem(idx)" class="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center shadow-md z-10">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    
                     <button @click="addShopItem" class="h-48 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-purple-300 hover:text-purple-500 transition-all">
                         <i class="fas fa-camera text-2xl mb-2"></i>
                         <span class="text-sm font-bold">新增商品</span>
@@ -302,13 +311,13 @@
                     </div>
                 </div>
 
-                <!-- Advanced Expense Tracker (With Payer) -->
+                <!-- Advanced Expense Tracker (Mobile Friendly) -->
                 <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 mb-8">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-lg font-bold text-slate-800">記帳/預算表</h3>
                     </div>
                     
-                    <!-- Expense Summary -->
+                    <!-- Stats Bar -->
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="bg-blue-50 p-2 rounded-lg text-center border border-blue-100">
                             <div class="text-[10px] text-blue-500 font-bold mb-1">奕銓 ({{ formatMoney(personStats.YiQuan) }})</div>
@@ -324,32 +333,39 @@
                         </div>
                     </div>
 
-                    <!-- Input Form -->
+                    <!-- Input Form (Mobile Optimized) -->
                     <div class="space-y-3 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <!-- Row 1: Item & Payer -->
-                        <div class="flex gap-2">
-                            <input v-model="newExpense.item" placeholder="項目" class="flex-[2] bg-white rounded-lg px-3 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
-                            <select v-model="newExpense.payer" class="flex-1 bg-white rounded-lg px-2 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none font-bold text-slate-600">
-                                <option value="YiQuan">奕銓</option>
-                                <option value="BingFen">秉芬</option>
-                            </select>
-                        </div>
                         
-                        <!-- Row 2: Amount & Currency -->
+                        <!-- Row 1: Payer Segmented Control (Full Width) -->
+                        <div class="flex bg-slate-200 p-1 rounded-lg">
+                            <button @click="newExpense.payer = 'YiQuan'" 
+                                    :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'YiQuan' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500']">
+                                奕銓
+                            </button>
+                            <button @click="newExpense.payer = 'BingFen'" 
+                                    :class="['flex-1 py-2 text-sm font-bold rounded-md transition-all', newExpense.payer === 'BingFen' ? 'bg-white text-pink-600 shadow-sm' : 'text-slate-500']">
+                                秉芬
+                            </button>
+                        </div>
+
+                        <!-- Row 2: Item (Full Width) -->
+                        <input v-model="newExpense.item" placeholder="消費項目 (如: 晚餐)" class="w-full bg-white rounded-lg px-3 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                        
+                        <!-- Row 3: Amount & Currency -->
                         <div class="flex gap-2">
-                            <input v-model.number="newExpense.amount" type="number" placeholder="金額" class="flex-1 bg-white rounded-lg px-3 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
-                            <select v-model="newExpense.currency" class="w-20 bg-white rounded-lg px-2 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                            <input v-model.number="newExpense.amount" type="number" placeholder="金額" class="flex-1 bg-white rounded-lg px-3 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                            <select v-model="newExpense.currency" class="w-24 bg-white rounded-lg px-2 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none font-bold text-slate-600">
                                 <option value="JPY">JPY</option>
                                 <option value="TWD">TWD</option>
                             </select>
                         </div>
 
-                        <!-- Row 3: Day & Method -->
+                        <!-- Row 4: Day & Method -->
                         <div class="flex gap-2">
-                            <select v-model="newExpense.day" class="flex-1 bg-white rounded-lg px-2 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                            <select v-model="newExpense.day" class="flex-1 bg-white rounded-lg px-2 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none text-slate-600">
                                 <option v-for="(day, idx) in timelineData" :key="idx" :value="idx">Day {{ idx }}</option>
                             </select>
-                            <select v-model="newExpense.method" class="flex-1 bg-white rounded-lg px-2 py-2 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none">
+                            <select v-model="newExpense.method" class="flex-1 bg-white rounded-lg px-2 py-3 text-sm border border-slate-200 focus:ring-1 focus:ring-purple-300 outline-none text-slate-600">
                                 <option value="cash">現金</option>
                                 <option value="credit">信用卡</option>
                                 <option value="mobile">行動支付</option>
@@ -357,35 +373,35 @@
                             </select>
                         </div>
 
-                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-2 text-sm font-bold hover:bg-slate-700 transition-colors active:scale-95">
+                        <button @click="addExpense" class="w-full bg-slate-800 text-white rounded-lg py-3 text-sm font-bold hover:bg-slate-700 transition-colors active:scale-95 shadow-lg shadow-slate-300">
                             <i class="fas fa-plus mr-1"></i> 加入紀錄
                         </button>
                     </div>
 
-                    <!-- Expense List (Grouped by Day) -->
+                    <!-- Expense List -->
                     <div class="space-y-4 max-h-60 overflow-y-auto pr-1">
                         <div v-for="(group, dayIdx) in groupedExpenses" :key="dayIdx" v-show="group.items.length > 0">
                             <div class="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded mb-2 inline-block">Day {{ dayIdx }}</div>
                             <div class="space-y-2">
-                                <div v-for="(exp, idx) in group.items" :key="idx" class="flex justify-between items-center text-sm p-2 bg-white border border-slate-100 rounded-lg shadow-sm">
-                                    <div class="flex items-center gap-2">
+                                <div v-for="(exp, idx) in group.items" :key="idx" class="flex justify-between items-center text-sm p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
+                                    <div class="flex items-center gap-3">
                                         <!-- Payer Badge -->
-                                        <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2', exp.payer === 'YiQuan' ? 'bg-blue-100 text-blue-600 border-blue-200' : 'bg-pink-100 text-pink-600 border-pink-200']">
+                                        <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0', exp.payer === 'YiQuan' ? 'bg-blue-100 text-blue-600 border-blue-200' : 'bg-pink-100 text-pink-600 border-pink-200']">
                                             {{ exp.payer === 'YiQuan' ? '奕' : '秉' }}
                                         </div>
                                         <div>
-                                            <div class="text-slate-700 font-medium leading-tight">{{ exp.item }}</div>
-                                            <div class="text-[10px] text-slate-400 mt-0.5">
-                                                <span v-if="exp.method === 'credit'"><i class="far fa-credit-card"></i> 信用卡</span>
-                                                <span v-else-if="exp.method === 'mobile'"><i class="fas fa-mobile-alt"></i> 行動支付</span>
-                                                <span v-else-if="exp.method === 'ic'"><i class="fas fa-subway"></i> 電子票證</span>
-                                                <span v-else><i class="fas fa-coins"></i> 現金</span>
+                                            <div class="text-slate-800 font-bold leading-tight">{{ exp.item }}</div>
+                                            <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
+                                                <span v-if="exp.method === 'credit'" class="bg-slate-100 px-1.5 rounded"><i class="far fa-credit-card mr-1"></i>信用卡</span>
+                                                <span v-else-if="exp.method === 'mobile'" class="bg-slate-100 px-1.5 rounded"><i class="fas fa-mobile-alt mr-1"></i>支付</span>
+                                                <span v-else-if="exp.method === 'ic'" class="bg-slate-100 px-1.5 rounded"><i class="fas fa-subway mr-1"></i>IC卡</span>
+                                                <span v-else class="bg-slate-100 px-1.5 rounded"><i class="fas fa-coins mr-1"></i>現金</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-mono font-bold text-slate-600 text-sm">{{ exp.currency }} {{ exp.amount.toLocaleString() }}</span>
-                                        <button @click="removeExpense(exp.originalIndex)" class="text-slate-300 hover:text-red-400 px-2"><i class="fas fa-times"></i></button>
+                                    <div class="flex flex-col items-end gap-1">
+                                        <span class="font-mono font-bold text-slate-700 text-sm">{{ exp.currency }} {{ exp.amount.toLocaleString() }}</span>
+                                        <button @click="removeExpense(exp.originalIndex)" class="text-slate-300 hover:text-red-400 px-2 text-xs"><i class="fas fa-trash-alt"></i></button>
                                     </div>
                                 </div>
                                 <!-- Daily Subtotal -->
@@ -482,7 +498,6 @@
                     <div v-for="group in backupSpots" :key="group.category">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-2">{{ group.category }}</h3>
                         <div class="space-y-3">
-                             <!-- Made the whole card a link for better UX -->
                              <a v-for="spot in group.items" :key="spot.name" 
                                 :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.address)" 
                                 target="_blank"
@@ -661,6 +676,12 @@
                 const showDriveTips = ref(false);
                 const modalData = ref({});
                 const currentDayIndex = ref(1); 
+                
+                // File inputs refs
+                const fileInputs = ref({});
+                const setFileRef = (el, idx) => {
+                    if (el) fileInputs.value[idx] = el;
+                };
 
                 // Currency
                 const jpyAmount = ref('');
@@ -787,6 +808,25 @@
                 const removeShopItem = (idx) => {
                     shoppingList.value.splice(idx, 1);
                 };
+                
+                // Image Upload Handler
+                const triggerFileUpload = (idx) => {
+                    if (fileInputs.value[idx]) {
+                        fileInputs.value[idx].click();
+                    }
+                };
+
+                const handleImageUpload = (event, idx) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            shoppingList.value[idx].img = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+
 
                 // Data: Timeline (Added Stories)
                 const timelineData = ref([
@@ -1063,7 +1103,7 @@
                     newExpense, expenseList, addExpense, removeExpense, totalExpenseJPY, totalExpenseTWD, groupedExpenses,
                     personStats, getPercent, formatMoney,
                     timelineData, hotels, mapCodes, packList, shoppingList, backupSpots,
-                    addPackItem, addShopItem, removeShopItem,
+                    addPackItem, addShopItem, removeShopItem, triggerFileUpload, handleImageUpload, setFileRef,
                     getIconColor, getTagColor, navBtnClass, scrollToDay, currentDayIndex,
                     handleCardClick, openDetailModal, openStoryModal, copyText, highlightText, allSpots,
                     promptAddEvent
