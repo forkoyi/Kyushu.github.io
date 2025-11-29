@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 九州行旅</title>
+    <title>2025 九州賞楓自駕行</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,7 +20,7 @@
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #F3F4F6; /* Light gray bg for contrast */
+            background-color: #F3F4F6;
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -44,20 +44,6 @@
         .slide-up-enter-from, .slide-up-leave-to {
             transform: translateY(20px);
             opacity: 0;
-        }
-
-        /* Purple Theme Classes */
-        .bg-theme-main { background-color: #E6E6FA; } /* Lavender */
-        .bg-theme-dark { background-color: #9370DB; } /* Medium Purple */
-        .text-theme-dark { color: #4B0082; } /* Indigo */
-        .border-theme { border-color: #D8BFD8; }
-
-        /* Card Styles */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
         /* Timeline Connector */
@@ -103,7 +89,7 @@
                 </span>
             </div>
 
-            <!-- Day Selector (Horizontal Scroll) -->
+            <!-- Day Selector -->
             <div class="flex overflow-x-auto gap-3 pb-2 -mx-2 px-2 no-scrollbar scroll-smooth">
                 <button 
                     v-for="(day, index) in timelineData" 
@@ -161,12 +147,10 @@
                                 
                                 <!-- Meta/Actions -->
                                 <div class="flex flex-wrap gap-2 mt-3">
-                                    <!-- Google Maps Button -->
                                     <a v-if="event.location" :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(event.location)" target="_blank" @click.stop 
                                        class="inline-flex items-center gap-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg transition-colors">
                                         <i class="fas fa-map-marker-alt text-red-500"></i> 導航
                                     </a>
-                                    <!-- Detail/Code Button -->
                                     <button v-if="event.code || event.detail" @click.stop="openDetailModal(event)" 
                                             class="inline-flex items-center gap-1 text-xs bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-100">
                                         <i class="fas fa-info-circle"></i> {{ event.code ? '查看代號' : '詳細資訊' }}
@@ -178,11 +162,9 @@
                 </div>
             </div>
 
-            <!-- VIEW: LIST (Checklist & Must Buy) -->
+            <!-- VIEW: LIST (Checklist) -->
             <div v-else-if="currentTab === 'list'" class="pt-4">
                 <h2 class="text-2xl font-bold mb-6 text-slate-800 px-2">行前與購物</h2>
-                
-                <!-- Toggle Sub-tabs -->
                 <div class="flex bg-slate-200 p-1 rounded-xl mb-6">
                     <button @click="listTab = 'pack'" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', listTab === 'pack' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500']">行前打包</button>
                     <button @click="listTab = 'buy'" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', listTab === 'buy' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500']">待買清單</button>
@@ -232,7 +214,7 @@
                 </div>
             </div>
 
-            <!-- VIEW: TOOLS (Currency & Driving) -->
+            <!-- VIEW: TOOLS (Currency, Driving & Budget) -->
             <div v-else-if="currentTab === 'tools'" class="pt-4 space-y-6">
                 
                 <!-- Driving HUD -->
@@ -243,8 +225,6 @@
                             <h3 class="text-lg font-bold italic"><i class="fas fa-car mr-2"></i>DRIVER HUD</h3>
                             <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">自駕模式</span>
                         </div>
-                        
-                        <!-- Quick Actions -->
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             <button @click="showDriveTips = true" class="bg-white/10 hover:bg-white/20 p-3 rounded-xl text-left transition-colors">
                                 <i class="fas fa-book text-blue-300 mb-2 block"></i>
@@ -257,8 +237,6 @@
                                 <div class="text-[10px] opacity-70">導航代碼清單</div>
                             </button>
                         </div>
-                        
-                        <!-- Emergency Button -->
                         <div class="flex gap-2">
                              <a href="tel:110" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl flex items-center justify-center font-bold transition-colors">
                                 <i class="fas fa-phone-alt mr-2"></i> 110 警察
@@ -278,33 +256,57 @@
                             <i class="fas fa-redo-alt text-xs"></i>
                         </button>
                     </div>
-                    
                     <div class="flex items-center justify-center mb-6">
                          <span class="text-slate-400 font-medium">1 JPY ≈ 0.22 TWD</span>
                     </div>
-
                     <div class="space-y-4">
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100 transition-all">
                             <label class="text-xs font-bold text-slate-400 mb-1 block">日幣 (JPY)</label>
                             <input type="number" v-model="jpyAmount" @input="calculateTWD" class="w-full text-3xl font-bold bg-transparent border-none p-0 focus:ring-0 text-slate-800 placeholder-slate-300" placeholder="0">
                         </div>
-                        
                         <div class="flex justify-center">
                             <i class="fas fa-arrow-down text-purple-300"></i>
                         </div>
-
                         <div class="bg-purple-50 rounded-2xl p-4 border border-purple-100">
                             <label class="text-xs font-bold text-purple-400 mb-1 block">台幣 (TWD)</label>
                             <div class="text-3xl font-bold text-purple-700">{{ twdAmount }}</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Budget / Expense Tracker (New) -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">記帳/預算表</h3>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Total: ¥{{ totalExpense.toLocaleString() }}</span>
+                    </div>
+                    
+                    <!-- Input Form -->
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <input v-model="newExpense.item" placeholder="項目" class="col-span-2 bg-slate-50 rounded-lg px-3 py-2 text-sm border-none focus:ring-1 focus:ring-purple-300">
+                        <input v-model.number="newExpense.amount" type="number" placeholder="¥金額" class="bg-slate-50 rounded-lg px-3 py-2 text-sm border-none focus:ring-1 focus:ring-purple-300">
+                        <button @click="addExpense" class="col-span-3 bg-slate-800 text-white rounded-lg py-2 text-sm font-bold hover:bg-slate-700 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> 加入消費
+                        </button>
+                    </div>
+
+                    <!-- Expense List -->
+                    <div class="space-y-2 max-h-40 overflow-y-auto">
+                        <div v-for="(exp, idx) in expenseList" :key="idx" class="flex justify-between items-center text-sm p-2 border-b border-slate-50 last:border-none">
+                            <span class="text-slate-600">{{ exp.item }}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono font-bold">¥{{ exp.amount.toLocaleString() }}</span>
+                                <button @click="removeExpense(idx)" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div v-if="expenseList.length === 0" class="text-center text-slate-300 text-xs py-4">尚未新增任何紀錄</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- VIEW: INFO (Flights, Hotels) -->
+            <!-- VIEW: INFO -->
             <div v-else-if="currentTab === 'info'" class="pt-4 space-y-4">
                 <h2 class="text-2xl font-bold mb-4 text-slate-800 px-2">重要資訊</h2>
-                
                 <!-- Flight Card -->
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                     <h3 class="text-sm font-bold text-slate-400 mb-3 flex items-center"><i class="fas fa-plane mr-2"></i>航班資訊 (星宇航空)</h3>
@@ -330,7 +332,6 @@
                         <span class="text-lg font-mono font-bold text-purple-600 select-all">D95RG3</span>
                     </div>
                 </div>
-
                 <!-- Hotel List -->
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                      <h3 class="text-sm font-bold text-slate-400 mb-3 flex items-center"><i class="fas fa-hotel mr-2"></i>住宿清單</h3>
@@ -352,17 +353,25 @@
                 </div>
             </div>
 
-            <!-- VIEW: MAPS (Attraction List) -->
+            <!-- VIEW: MAPS (Attractions & Backup) -->
             <div v-else-if="currentTab === 'map'" class="pt-4">
                 <h2 class="text-2xl font-bold mb-4 text-slate-800 px-2">景點導航</h2>
-                <div class="grid grid-cols-1 gap-3">
+                
+                <!-- Toggle Map Tabs -->
+                <div class="flex bg-slate-200 p-1 rounded-xl mb-4 mx-2">
+                    <button @click="mapTab = 'route'" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', mapTab === 'route' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500']">行程景點</button>
+                    <button @click="mapTab = 'backup'" :class="['flex-1 py-2 rounded-lg text-sm font-bold transition-all', mapTab === 'backup' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500']">備用與購物</button>
+                </div>
+
+                <!-- Main Route -->
+                <div v-if="mapTab === 'route'" class="grid grid-cols-1 gap-3">
                     <div v-for="spot in allSpots" :key="spot.name" class="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                                 <i :class="spot.icon"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-slate-800">{{ spot.name }}</h4>
+                                <h4 class="font-bold text-slate-800 text-sm">{{ spot.name }}</h4>
                                 <span class="text-xs text-slate-500">{{ spot.area }}</span>
                             </div>
                         </div>
@@ -370,6 +379,34 @@
                            class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors">
                             <i class="fas fa-location-arrow"></i>
                         </a>
+                    </div>
+                </div>
+
+                <!-- Backup & Shopping -->
+                <div v-if="mapTab === 'backup'" class="space-y-3 pb-8">
+                    <div v-for="group in backupSpots" :key="group.category">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-2">{{ group.category }}</h3>
+                        <div class="space-y-3">
+                             <div v-for="spot in group.items" :key="spot.name" class="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">{{ spot.name }}</h4>
+                                        <p class="text-[10px] text-slate-500 mt-1"><i class="fas fa-map-marker-alt mr-1"></i>{{ spot.address }}</p>
+                                    </div>
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(spot.address)" target="_blank" 
+                                       class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 shrink-0">
+                                        <i class="fas fa-location-arrow text-sm"></i>
+                                    </a>
+                                </div>
+                                <div class="bg-slate-50 rounded px-2 py-1 flex justify-between items-center" @click="copyText(spot.code)">
+                                    <span class="text-[10px] text-slate-400">Navi: 電話/MapCode</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-xs font-mono font-bold text-slate-700">{{ spot.code }}</span>
+                                        <i class="far fa-copy text-[10px] text-slate-400"></i>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -389,7 +426,6 @@
                 <span class="text-[10px] font-bold">地圖</span>
             </button>
             
-            <!-- Floating Add Button (Visual only for list) -->
             <div class="-mt-8">
                 <button @click="currentTab = 'list'" class="w-14 h-14 bg-purple-600 rounded-full shadow-lg shadow-purple-300 text-white flex items-center justify-center text-xl hover:scale-105 transition-transform">
                     <i class="fas fa-clipboard-check"></i>
@@ -407,7 +443,6 @@
         </nav>
 
         <!-- ================= MODALS ================= -->
-        
         <!-- Detail Modal -->
         <transition name="fade">
             <div v-if="showModal" class="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showModal = false">
@@ -419,18 +454,13 @@
                         <h3 class="text-xl font-bold text-slate-800">{{ modalData.title }}</h3>
                         <p class="text-sm text-slate-500 mt-1">{{ modalData.time }}</p>
                     </div>
-
-                    <!-- Code Section -->
                     <div v-if="modalData.code" class="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 text-center">
                         <p class="text-xs text-slate-400 mb-1">預約/訂位代號</p>
                         <p class="text-2xl font-mono font-bold text-slate-800 select-all">{{ modalData.code }}</p>
                     </div>
-
-                    <!-- Description -->
                     <div class="text-sm text-slate-600 leading-relaxed mb-6">
                         {{ modalData.desc }}
                     </div>
-
                     <button @click="showModal = false" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition-colors">
                         關閉
                     </button>
@@ -505,11 +535,12 @@
             setup() {
                 const currentTab = ref('home');
                 const listTab = ref('pack');
+                const mapTab = ref('route'); // New tab state for Map
                 const showModal = ref(false);
                 const showMapCodes = ref(false);
                 const showDriveTips = ref(false);
                 const modalData = ref({});
-                const currentDayIndex = ref(1); // Default to Day 1
+                const currentDayIndex = ref(1); 
                 
                 // Mock Weather
                 const currentWeather = ref(12);
@@ -519,14 +550,21 @@
                 const jpyAmount = ref('');
                 const twdAmount = ref(0);
                 const rate = 0.22;
+                const calculateTWD = () => { twdAmount.value = Math.round(jpyAmount.value * rate); };
+                const resetCurrency = () => { jpyAmount.value = ''; twdAmount.value = 0; }
 
-                const calculateTWD = () => {
-                    twdAmount.value = Math.round(jpyAmount.value * rate);
+                // Expense Tracker
+                const newExpense = ref({ item: '', amount: '' });
+                const expenseList = ref([]);
+                const addExpense = () => {
+                    if (newExpense.value.item && newExpense.value.amount) {
+                        expenseList.value.push({ ...newExpense.value });
+                        newExpense.value.item = '';
+                        newExpense.value.amount = '';
+                    }
                 };
-                const resetCurrency = () => {
-                    jpyAmount.value = '';
-                    twdAmount.value = 0;
-                }
+                const removeExpense = (idx) => { expenseList.value.splice(idx, 1); };
+                const totalExpense = computed(() => expenseList.value.reduce((sum, item) => sum + item.amount, 0));
 
                 // Countdown
                 const tripDate = new Date('2025-12-03');
@@ -551,6 +589,54 @@
                     { place: '上色見熊野座神社', code: '257 886 475*70', note: '螢火之森場景' },
                     { place: '高千穗峽停車場', code: '330 711 731*58', note: '御鹽井(最近)' },
                     { place: 'TOYOTA 熊本站前店', code: '29 428 586*66', note: '還車處' },
+                ];
+
+                // Data: Backup Spots
+                const backupSpots = [
+                    {
+                        category: "休息站 (道之驛)",
+                        items: [
+                            { name: "道之驛 阿蘇", address: "熊本県阿蘇市黒川1440-1", code: "0967-35-5077" },
+                            { name: "道之驛 七城Melon Dome", address: "熊本県菊池市七城町岡田306", code: "0968-25-5757" }
+                        ]
+                    },
+                    {
+                        category: "購物 (Bic Camera / Yodobashi)",
+                        items: [
+                            { name: "Bic Camera 天神1號館", address: "福岡市中央区今泉1-25-1", code: "092-732-1112" },
+                            { name: "Bic Camera 天神2號館", address: "福岡市中央区天神2-4-5", code: "092-732-1111" },
+                            { name: "Bic Camera 熊本店", address: "熊本市西区春日3-15-60", code: "096-323-1111" },
+                            { name: "Yodobashi 博多", address: "福岡市博多区博多駅中央街6-12", code: "092-471-1010" }
+                        ]
+                    },
+                    {
+                        category: "購物 (唐吉訶德)",
+                        items: [
+                            { name: "唐吉訶德 福岡天神本店", address: "福岡市中央区今泉1-20-17", code: "092-736-5911" },
+                            { name: "唐吉訶德 博多站南店", address: "福岡市博多区東光寺町2-6-40", code: "092-432-6511" },
+                            { name: "唐吉訶德 博多丸井店", address: "福岡市博多区博多駅中央街9-1 3F", code: "092-433-3811" },
+                            { name: "唐吉訶德 熊本下通店", address: "熊本市中央区安政町5-27", code: "096-324-5511" },
+                            { name: "唐吉訶德 南熊本店", address: "熊本市中央区南熊本1-9-25", code: "096-375-6511" }
+                        ]
+                    },
+                    {
+                        category: "美食備案",
+                        items: [
+                            { name: "治一郎布丁 (博多站)", address: "JR博多城 AMU PLAZA B1F", code: "092-409-6720" },
+                            { name: "麵屋兼虎 天神本店", address: "福岡市中央区渡辺通4-9-18", code: "092-726-7121" },
+                            { name: "麵屋兼虎 福岡PARCO", address: "福岡PARCO本館 B1F", code: "092-235-7226" },
+                            { name: "麵屋兼虎 博多店", address: "博多Deitos 2F 拉麵街道", code: "092-477-3113" },
+                            { name: "炸豬排 WAKABA", address: "福岡市中央区天神1-15-36", code: "092-732-1209" }
+                        ]
+                    },
+                    {
+                        category: "西村裕二商品",
+                        items: [
+                            { name: "福岡天神 LOFT", address: "福岡市中央区渡辺通4-9-25", code: "092-724-6210" },
+                            { name: "Animate 福岡Parco", address: "福岡PARCO本館 8F", code: "092-732-8070" },
+                            { name: "Village Vanguard", address: "福岡PARCO本館 7F (通常位置)", code: "需確認分店" }
+                        ]
+                    }
                 ];
 
                 // Data: Packing List
@@ -596,10 +682,10 @@
                         events: [
                             { time: '07:30', title: '搭機前往熊本', type: 'plane', icon: 'fas fa-plane-departure', desc: '星宇 JX846。建議 05:30 抵達機場。', code: 'D95RG3' },
                             { time: '11:30', title: '抵達 & 移動', type: 'bus', icon: 'fas fa-bus', desc: '機場巴士 → 熊本駅 (約1hr)', location: '阿蘇熊本機場' },
-                            { time: '12:30', title: '午餐: 肥後好物市場', type: 'food', icon: 'fas fa-utensils', tag: '必吃', desc: '熊本車站內快速解決，推薦拉麵或便當。', location: '肥後よかモン市場' },
+                            { time: '12:30', title: '午餐: 火車便當', type: 'food', icon: 'fas fa-bento', tag: '特色', desc: '在熊本駅購買當地特色Ekiben。', location: '熊本駅' },
                             { time: '13:00', title: '新幹線 → 博多', type: 'train', icon: 'fas fa-subway', desc: '記得預約「特大荷物席」。', location: '熊本駅' },
                             { time: '15:30', title: '櫛田神社 & 川端通', type: 'sight', icon: 'fas fa-torii-gate', desc: '博多總鎮守，必看巨大山笠。商店街吃紅豆麻糬湯。', location: '櫛田神社' },
-                            { time: '18:00', title: '晚餐: 牛腸鍋', type: 'food', icon: 'fas fa-utensils', tag: '必吃', desc: '體驗博多名物，或去中洲屋台。', location: '博多もつ鍋' }
+                            { time: '18:00', title: '晚餐: 炸豬排/拉麵', type: 'food', icon: 'fas fa-utensils', tag: '必吃', desc: '推薦「炸豬排 WAKABA」或「麵屋兼虎」。', location: '福岡市中央区天神1-15-36' }
                         ]
                     },
                     {
@@ -626,6 +712,7 @@
                             { time: '09:30', title: '移動 → 南阿蘇', type: 'car', icon: 'fas fa-car', desc: '注意路面是否結冰。' },
                             { time: '10:30', title: '上色見熊野座神社', type: 'sight', icon: 'fas fa-tree', tag: '秘境', desc: '通往異世界的參道，螢火之森場景。', location: '上色見熊野座神社' },
                             { time: '14:00', title: '天岩戶神社', type: 'sight', icon: 'fas fa-praying-hands', desc: '最強能量點，步行至天安河原許願。', location: '天岩戶神社' },
+                            { time: '16:00', title: '飯店 Check-in', type: 'hotel', icon: 'fas fa-bed', desc: 'SOLEST 高千穗飯店', location: 'ソレスト高千穂ホテル', code: 'AGRJWYNZND' },
                             { time: '18:00', title: '晚餐: 燒肉 和', type: 'food', icon: 'fas fa-drumstick-bite', tag: '必吃', desc: '高千穗牛名店，務必準時。', location: '高千穂牛レストラン和', code: '0982-73-1109' },
                             { time: '20:00', title: '夜神樂', type: 'sight', icon: 'fas fa-theater-masks', desc: '高千穗神社，欣賞傳統神話表演。', location: '高千穗神社' }
                         ]
@@ -678,6 +765,7 @@
                     if (tag === '自駕') return 'bg-blue-100 text-blue-600';
                     if (tag === '預約') return 'bg-red-100 text-red-600';
                     if (tag === '購物') return 'bg-yellow-100 text-yellow-700';
+                    if (tag === '特色') return 'bg-green-100 text-green-700';
                     return 'bg-gray-100 text-gray-600';
                 };
 
@@ -698,7 +786,6 @@
                 };
 
                 const handleCardClick = (event) => {
-                    // Only open modal if there's significant detail or code
                     if (event.code || event.detail) {
                         openDetailModal(event);
                     }
@@ -722,11 +809,9 @@
                 };
 
                 const highlightText = (text) => {
-                    // Simple highlighting for keywords
                     return text.replace(/(必吃|必點|必買)/g, '<span class="text-orange-500 font-bold">$1</span>');
                 };
 
-                // Computed: All Spots for Map View
                 const allSpots = computed(() => {
                     const spots = [];
                     timelineData.forEach(day => {
@@ -740,14 +825,15 @@
                             }
                         });
                     });
-                    return spots; // In real app, filter unique
+                    return spots;
                 });
 
                 return {
-                    currentTab, listTab, showModal, showMapCodes, showDriveTips, modalData,
+                    currentTab, listTab, mapTab, showModal, showMapCodes, showDriveTips, modalData,
                     currentWeather, currentLocation, daysUntilTrip,
                     jpyAmount, twdAmount, calculateTWD, resetCurrency,
-                    timelineData, hotels, mapCodes, packList, shoppingList,
+                    newExpense, expenseList, addExpense, removeExpense, totalExpense,
+                    timelineData, hotels, mapCodes, packList, shoppingList, backupSpots,
                     addPackItem, addShopItem, removeShopItem,
                     getIconColor, getTagColor, navBtnClass, scrollToDay, currentDayIndex,
                     handleCardClick, openDetailModal, copyText, highlightText, allSpots
